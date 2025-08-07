@@ -19,6 +19,7 @@ function PromptManager() {
   const [improvingId, setImprovingId] = useState(null);
   const [improvedPrompt, setImprovedPrompt] = useState(null);
   const [showImprovementModal, setShowImprovementModal] = useState(false);
+  const [showAddPromptModal, setShowAddPromptModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Load prompts from API on component mount
@@ -139,6 +140,9 @@ function PromptManager() {
             content: '',
             isPublic: false
           });
+          // Close modal
+          setShowAddPromptModal(false);
+          setEditingId(null);
         } else {
           throw new Error(result.error || 'Failed to save prompt');
         }
@@ -160,8 +164,7 @@ function PromptManager() {
       isPublic: prompt.isPublic || false
     });
     setEditingId(prompt.id);
-    // Scroll to form
-    document.querySelector('.prompt-form').scrollIntoView({ behavior: 'smooth' });
+    setShowAddPromptModal(true);
   };
 
   // Handle deleting a prompt
@@ -268,6 +271,25 @@ function PromptManager() {
     setImprovedPrompt(null);
   };
 
+  // Open add prompt modal
+  const handleOpenAddPromptModal = () => {
+    setShowAddPromptModal(true);
+  };
+
+  // Close add prompt modal
+  const handleCloseAddPromptModal = () => {
+    setShowAddPromptModal(false);
+    // Reset form when closing modal
+    setFormData({
+      title: '',
+      description: '',
+      content: '',
+      isPublic: false
+    });
+    setErrors({});
+    setEditingId(null);
+  };
+
   // Filter prompts based on search term
   const filteredPrompts = prompts.filter(prompt =>
     prompt.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -328,108 +350,15 @@ function PromptManager() {
         </div>
       </div>
 
-      {/* Add/Edit Prompt Form */}
-      <div className="prompt-card">
-        <h2 className="card-title">
-          {editingId ? 'Edit Prompt' : 'Add New Prompt'}
-        </h2>
-        
-        <form onSubmit={handleSubmit} className="prompt-form">
-          <div className="form-group">
-            <label htmlFor="title" className="form-label">
-              Prompt Title
-            </label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              className={`form-input ${errors.title ? 'error' : ''}`}
-              placeholder="Enter a descriptive title for your prompt"
-              disabled={isSubmitting}
-            />
-            {errors.title && (
-              <span className="error-message">{errors.title}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="description" className="form-label">
-              Description
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              className={`form-textarea ${errors.description ? 'error' : ''}`}
-              placeholder="Describe what this prompt is for and how it should be used"
-              rows="3"
-              disabled={isSubmitting}
-            />
-            {errors.description && (
-              <span className="error-message">{errors.description}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="content" className="form-label">
-              Prompt Content
-            </label>
-            <textarea
-              id="content"
-              name="content"
-              value={formData.content}
-              onChange={handleInputChange}
-              className={`form-textarea ${errors.content ? 'error' : ''}`}
-              placeholder="Enter your prompt content here..."
-              rows="6"
-              disabled={isSubmitting}
-            />
-            {errors.content && (
-              <span className="error-message">{errors.content}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <div className="checkbox-group">
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  name="isPublic"
-                  checked={formData.isPublic}
-                  onChange={(e) => setFormData(prev => ({ ...prev, isPublic: e.target.checked }))}
-                  disabled={isSubmitting}
-                />
-                <span className="checkbox-text">
-                  <strong>Make this prompt public</strong>
-                  <small>Other team members in your organization can view and use this prompt</small>
-                </span>
-              </label>
-            </div>
-          </div>
-
-          <div className="form-actions">
-            <button
-              type="submit"
-              className={`submit-button ${isSubmitting ? 'loading' : ''}`}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Saving...' : editingId ? 'Update Prompt' : 'Save Prompt'}
-            </button>
-            {editingId && (
-              <button
-                type="button"
-                className="cancel-button"
-                onClick={handleCancelEdit}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </button>
-            )}
-          </div>
-        </form>
+      {/* Add Prompt Button */}
+      <div className="add-prompt-section">
+        <button 
+          className="add-prompt-button"
+          onClick={handleOpenAddPromptModal}
+        >
+          <span className="button-icon">➕</span>
+          Add New Prompt
+        </button>
       </div>
 
       {/* Search and Filter */}
@@ -543,6 +472,122 @@ function PromptManager() {
           </div>
         )}
       </div>
+
+      {/* Add Prompt Modal */}
+      {showAddPromptModal && (
+        <div className="modal-overlay" onClick={handleCloseAddPromptModal}>
+          <div className="modal-content add-prompt-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">
+                {editingId ? 'Edit Prompt' : 'Add New Prompt'}
+              </h2>
+              <button 
+                className="modal-close-button"
+                onClick={handleCloseAddPromptModal}
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <form onSubmit={handleSubmit} className="prompt-form">
+                <div className="form-group">
+                  <label htmlFor="title" className="form-label">
+                    Prompt Title
+                  </label>
+                  <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    className={`form-input ${errors.title ? 'error' : ''}`}
+                    placeholder="Enter a descriptive title for your prompt"
+                    disabled={isSubmitting}
+                  />
+                  {errors.title && (
+                    <span className="error-message">{errors.title}</span>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="description" className="form-label">
+                    Description
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className={`form-textarea ${errors.description ? 'error' : ''}`}
+                    placeholder="Describe what this prompt is for and how it should be used"
+                    rows="3"
+                    disabled={isSubmitting}
+                  />
+                  {errors.description && (
+                    <span className="error-message">{errors.description}</span>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="content" className="form-label">
+                    Prompt Content
+                  </label>
+                  <textarea
+                    id="content"
+                    name="content"
+                    value={formData.content}
+                    onChange={handleInputChange}
+                    className={`form-textarea ${errors.content ? 'error' : ''}`}
+                    placeholder="Enter your prompt content here..."
+                    rows="6"
+                    disabled={isSubmitting}
+                  />
+                  {errors.content && (
+                    <span className="error-message">{errors.content}</span>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <div className="checkbox-group">
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        name="isPublic"
+                        checked={formData.isPublic}
+                        onChange={(e) => setFormData(prev => ({ ...prev, isPublic: e.target.checked }))}
+                        disabled={isSubmitting}
+                      />
+                      <span className="checkbox-text">
+                        <strong>Make this prompt public</strong>
+                        <small>Other team members in your organization can view and use this prompt</small>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="modal-footer">
+                  <button
+                    type="submit"
+                    className={`modal-button accept-button ${isSubmitting ? 'loading' : ''}`}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Saving...' : editingId ? 'Update Prompt' : 'Save Prompt'}
+                  </button>
+                  <button
+                    type="button"
+                    className="modal-button reject-button"
+                    onClick={handleCloseAddPromptModal}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* AI Improvement Modal */}
       {showImprovementModal && improvedPrompt && (
