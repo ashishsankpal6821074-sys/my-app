@@ -1,5 +1,137 @@
 .App {
   text-align: center;
+  min-height: 100vh;
+  background: 
+    linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%),
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+    linear-gradient(180deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+  position: relative;
+}
+
+.app-nav {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 16px 20px;
+  border-radius: 50px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  animation: fadeInDown 0.8s ease-out;
+  min-width: 600px;
+}
+
+.nav-left,
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  margin-right: 8px;
+}
+
+.user-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.user-org {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.logout-button {
+  background: rgba(231, 76, 60, 0.2) !important;
+  color: #ff6b7d !important;
+  border: 1px solid rgba(231, 76, 60, 0.3) !important;
+}
+
+.logout-button:hover {
+  background: rgba(231, 76, 60, 0.3) !important;
+  color: #ffffff !important;
+  border-color: rgba(231, 76, 60, 0.5) !important;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.nav-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.nav-button:hover::before {
+  left: 100%;
+}
+
+.nav-button:hover {
+  background: rgba(102, 126, 234, 0.2);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+}
+
+.nav-button.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transform: translateY(-1px);
+}
+
+.nav-button.active:hover {
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px);
 }
 
 .App-logo {
@@ -34,5 +166,158 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+.app-content {
+  padding-top: 100px; /* Account for fixed navigation */
+}
+
+/* Loading Screen */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: 
+    linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%),
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+    linear-gradient(180deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+  gap: 20px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: loadingSpin 1s linear infinite;
+}
+
+@keyframes loadingSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: loadingPulse 2s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+/* Navigation Responsive Design */
+@media (max-width: 1024px) {
+  .app-nav {
+    min-width: 500px;
+    padding: 14px 18px;
+  }
+
+  .user-info {
+    margin-right: 6px;
+  }
+
+  .user-name {
+    font-size: 12px;
+  }
+
+  .user-org {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-nav {
+    top: 16px;
+    padding: 12px 16px;
+    gap: 16px;
+    min-width: 90vw;
+    max-width: calc(100vw - 32px);
+    flex-direction: column;
+    border-radius: 20px;
+  }
+
+  .nav-left,
+  .nav-right {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .nav-right {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 12px;
+    margin-top: 8px;
+  }
+
+  .user-info {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-right: 12px;
+  }
+
+  .user-org {
+    display: none;
+  }
+
+  .nav-button {
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+
+  .app-content {
+    padding-top: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-nav {
+    top: 12px;
+    padding: 12px;
+    gap: 12px;
+    min-width: calc(100vw - 24px);
+  }
+
+  .nav-left {
+    gap: 8px;
+  }
+
+  .nav-right {
+    gap: 8px;
+    padding-top: 8px;
+    margin-top: 8px;
+  }
+
+  .user-name {
+    font-size: 11px;
+  }
+
+  .nav-button {
+    padding: 8px 14px;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+  }
+
+  .app-content {
+    padding-top: 160px;
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border-width: 3px;
+  }
+
+  .loading-text {
+    font-size: 14px;
   }
 }
