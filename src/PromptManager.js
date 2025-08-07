@@ -466,13 +466,27 @@ function PromptManager() {
                 <div className="prompt-header-item">
                   <div className="title-section">
                     <h3 className="prompt-item-title">{prompt.title}</h3>
-                    {prompt.improvedByAI && (
-                      <span className="ai-badge" title="This prompt has been enhanced by AI">
-                        ✨ AI Enhanced
-                      </span>
-                    )}
+                    <div className="badges-container">
+                      {prompt.improvedByAI && (
+                        <span className="ai-badge" title="This prompt has been enhanced by AI">
+                          ✨ AI Enhanced
+                        </span>
+                      )}
+                      {prompt.isPublic ? (
+                        <span className="public-badge" title="This prompt is shared with your organization">
+                          🌐 Public
+                        </span>
+                      ) : (
+                        <span className="private-badge" title="This prompt is private to you">
+                          🔒 Private
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="prompt-meta">
+                    <span className="author-info">
+                      {prompt.createdBy === user?.id ? 'Created by you' : `Created by ${prompt.authorName || 'Team member'}`}
+                    </span>
                     <span className="usage-count">Used {prompt.usageCount} times</span>
                     <span className="date-info">
                       {prompt.updatedAt !== prompt.createdAt ? 'Updated' : 'Created'}: {formatDate(prompt.updatedAt)}

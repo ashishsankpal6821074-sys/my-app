@@ -240,9 +240,18 @@ class ApiService {
       (prompt.isPublic || prompt.createdBy === userId)
     );
 
+    // Enhance prompts with author information
+    const enhancedPrompts = userPrompts.map(prompt => {
+      const author = this.users.find(user => user.id === prompt.createdBy);
+      return {
+        ...prompt,
+        authorName: author ? author.name : 'Unknown User'
+      };
+    });
+
     return {
       success: true,
-      prompts: userPrompts.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+      prompts: enhancedPrompts.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
     };
   }
 
