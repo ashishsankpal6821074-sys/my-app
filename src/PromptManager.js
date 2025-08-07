@@ -318,84 +318,260 @@ function PromptManager() {
 
     setIsProcessing(true);
     try {
-      const documentPrompt = `You are a business analyst AI assistant.
-
-Analyze the uploaded content and produce a professional, structured Business Requirements Document (BRD) that includes:
-- Title
-- Purpose and Background
-- Scope (In-Scope and Out-of-Scope)
-- Actors or Stakeholders
-- Functional Requirements
-- Non-Functional Requirements
-- Assumptions and Constraints
-- Flow Diagram (stepwise explanation)
-- Future Enhancements
-- Version History
-
-If any data is missing, mention "Not provided".
-
-Input:
-${documentInput}`;
-
       // Simulate API call for document enhancement
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const enhancedDocument = `# Business Requirements Document
+      // Analyze the input content for context
+      const inputText = documentInput.toLowerCase();
+      const isSystemIntegration = inputText.includes('integration') || inputText.includes('api') || inputText.includes('system');
+      const isUserInterface = inputText.includes('ui') || inputText.includes('interface') || inputText.includes('user') || inputText.includes('screen');
+      const isWorkflow = inputText.includes('process') || inputText.includes('workflow') || inputText.includes('step') || inputText.includes('flow');
+      const isMobile = inputText.includes('mobile') || inputText.includes('app') || inputText.includes('android') || inputText.includes('ios');
+      const isDatabase = inputText.includes('data') || inputText.includes('database') || inputText.includes('storage') || inputText.includes('record');
+      
+      // Extract potential project name or create generic title
+      const sentences = documentInput.split(/[.!?\n]+/).filter(s => s.trim().length > 0);
+      const firstSentence = sentences[0] || 'Business Requirement';
+      let projectTitle = firstSentence.length > 50 
+        ? firstSentence.substring(0, 50).trim() + '...' 
+        : firstSentence.trim();
+      
+      // Clean up title
+      projectTitle = projectTitle.charAt(0).toUpperCase() + projectTitle.slice(1);
+      if (!projectTitle.includes('System') && !projectTitle.includes('Application') && !projectTitle.includes('Platform')) {
+        projectTitle += ' System';
+      }
 
-## Title
-Document Enhancement Analysis
+      // Generate current date
+      const currentDate = new Date().toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
 
-## Purpose and Background
-${documentInput.length > 100 ? documentInput.substring(0, 100) + '...' : documentInput}
+      // Analyze content for specific requirements
+      const hasAuthentication = inputText.includes('login') || inputText.includes('auth') || inputText.includes('user') || inputText.includes('password');
+      const hasReporting = inputText.includes('report') || inputText.includes('analytics') || inputText.includes('dashboard');
+      const hasNotifications = inputText.includes('notification') || inputText.includes('alert') || inputText.includes('email') || inputText.includes('sms');
+      const hasPayment = inputText.includes('payment') || inputText.includes('transaction') || inputText.includes('billing');
+      
+      const enhancedDocument = `# ${projectTitle}
 
-## Scope
-**In-Scope:**
-- Analysis of provided content
-- Generation of structured BRD format
-- Identification of key requirements
+## Document Version
+- **Version:** 1.0
+- **Date:** ${currentDate}
+- **Prepared By:** AI Business Analyst (based on user input)
 
-**Out-of-Scope:**
-- Not provided
+## Purpose & Background
+${sentences.length > 0 ? 
+  `This requirement addresses the need for ${projectTitle.toLowerCase()}. ${sentences.slice(0, 2).join('. ')}.` : 
+  'Not provided - Please provide background information about the business need.'
+}
 
-## Actors or Stakeholders
-- Business Analyst
-- Project Manager
-- Development Team
-- End Users
+The business requirement aims to enhance operational efficiency and meet stakeholder expectations through systematic implementation.
+
+## Scope of the Requirement
+
+### In-Scope:
+${isSystemIntegration ? '• System integration and API development\n' : ''}${isUserInterface ? '• User interface design and implementation\n' : ''}${isWorkflow ? '• Process workflow automation\n' : ''}${isMobile ? '• Mobile application development\n' : ''}${isDatabase ? '• Data management and storage solutions\n' : ''}• Core functionality as described in the input
+• User training and documentation
+• Testing and quality assurance
+• Initial deployment and go-live support
+
+### Out-of-Scope:
+• Third-party system maintenance beyond integration points
+• Hardware procurement and infrastructure setup
+• Ongoing support beyond initial warranty period
+• ${isSystemIntegration ? 'Legacy system decommissioning' : 'Advanced analytics and AI features'}
+
+## Stakeholders / Actors
+
+### Primary Stakeholders:
+• **Business Users:** End-users who will interact with the system daily
+• **System Administrator:** Responsible for system configuration and maintenance
+• **Project Manager:** Oversees project delivery and timeline
+• **Development Team:** Technical implementation and coding
+
+### Secondary Stakeholders:
+• **IT Support Team:** Provides technical support post-implementation
+• **Quality Assurance Team:** Ensures system meets quality standards
+• **Business Analyst:** Documents requirements and facilitates communication
+• **End-User Representatives:** Provide feedback during development
+
+## Business Requirements
+
+1. **Core Functionality:** System must deliver the primary business value as outlined in the input requirements
+2. **User Access Control:** ${hasAuthentication ? 'Secure user authentication and role-based access control' : 'Basic user management capabilities'}
+3. **Data Management:** Reliable data storage, retrieval, and backup mechanisms
+4. **Reporting Capabilities:** ${hasReporting ? 'Comprehensive reporting and analytics dashboard' : 'Basic reporting functionality for business insights'}
+5. **Integration Support:** ${isSystemIntegration ? 'Seamless integration with existing business systems' : 'Standard integration capabilities as needed'}
+6. **Compliance:** Adherence to relevant industry standards and regulations
 
 ## Functional Requirements
-1. System shall process the provided input content
-2. System shall generate structured documentation
-3. System shall identify key business requirements
+
+### Core System Functions:
+1. **User Management:**
+   - User registration and profile management
+   - ${hasAuthentication ? 'Multi-factor authentication support' : 'Basic login/logout functionality'}
+   - Role-based permissions and access control
+
+2. **Data Processing:**
+   - Data input validation and sanitization
+   - ${isDatabase ? 'Advanced data querying and filtering capabilities' : 'Basic CRUD operations (Create, Read, Update, Delete)'}
+   - Data export and import functionality
+
+3. **User Interface:**
+   - ${isUserInterface ? 'Intuitive and responsive user interface design' : 'Clean and functional user interface'}
+   - ${isMobile ? 'Mobile-responsive design for cross-device compatibility' : 'Web-based interface optimized for desktop use'}
+   - Accessibility compliance (WCAG 2.1 AA)
+
+4. **System Integration:**
+   - ${isSystemIntegration ? 'RESTful API endpoints for external system integration' : 'Standard integration capabilities'}
+   - Data synchronization mechanisms
+   - Error handling and logging
 
 ## Non-Functional Requirements
-- Performance: Response time < 3 seconds
-- Reliability: 99.9% uptime
-- Scalability: Support multiple concurrent users
+
+### Performance:
+• Response time: < 3 seconds for standard operations
+• System availability: 99.5% uptime during business hours
+• Concurrent user support: Up to 100 simultaneous users
+
+### Security:
+• Data encryption in transit and at rest
+• Regular security audits and vulnerability assessments
+• Secure backup and disaster recovery procedures
+
+### Scalability:
+• Horizontal scaling capability for increased load
+• Database optimization for large datasets
+• Cloud-ready architecture
+
+### Usability:
+• Intuitive user interface requiring minimal training
+• Comprehensive help documentation and user guides
+• Multi-language support (if applicable)
 
 ## Assumptions and Constraints
-**Assumptions:**
-- Input content is relevant to business requirements
-- Users have appropriate access permissions
 
-**Constraints:**
-- Limited to provided input data
-- Processing time dependent on content complexity
+### Assumptions:
+• Users have basic computer literacy and internet access
+• Existing IT infrastructure can support the new system
+• Stakeholders will be available for requirements validation and testing
+• ${isSystemIntegration ? 'External systems will provide stable API endpoints' : 'Current business processes are well-documented'}
 
-## Flow Diagram (Stepwise Explanation)
-1. User provides input content
-2. System analyzes content structure
-3. System extracts key requirements
-4. System generates BRD format
-5. System presents structured output
+### Constraints:
+• Budget limitations may impact feature scope
+• Timeline constraints require phased implementation approach
+• ${isMobile ? 'Mobile platform limitations may affect certain features' : 'Browser compatibility requirements may limit UI complexity'}
+• Regulatory compliance requirements must be maintained throughout
 
-## Future Enhancements
-- Integration with project management tools
-- Advanced AI analysis capabilities
-- Multi-format export options
+## Workflow / Process Flow Diagram (Described in Steps)
 
-## Version History
-- v1.0 - Initial BRD generation (${new Date().toLocaleDateString()})`;
+### Primary Workflow:
+1. **User Authentication:** User logs into the system with valid credentials
+2. **Dashboard Access:** System displays personalized dashboard based on user role
+3. **Function Selection:** User navigates to desired functionality
+4. **Data Input/Modification:** User performs required operations (create, update, view)
+5. **Validation:** System validates all inputs and business rules
+6. **Processing:** System processes the request and updates relevant data
+7. **Confirmation:** User receives confirmation of successful operation
+8. **${hasNotifications ? 'Notification:** Relevant stakeholders are notified of changes' : 'Logging:** System logs all activities for audit purposes'}
+
+### Decision Points:
+• Authentication validation (Success/Failure)
+• Data validation checks (Pass/Fail)
+• Permission verification (Authorized/Unauthorized)
+• ${isWorkflow ? 'Workflow approval steps (Approved/Rejected/Pending)' : 'System availability checks (Available/Maintenance)'}
+
+## UI/UX Expectations
+
+### Design Principles:
+• **Simplicity:** Clean, uncluttered interface design
+• **Consistency:** Uniform design patterns throughout the application
+• **Accessibility:** Compliance with accessibility standards
+• **Responsiveness:** ${isMobile ? 'Mobile-first design approach' : 'Desktop-optimized with mobile compatibility'}
+
+### User Experience Goals:
+• Minimize clicks required for common tasks
+• Provide clear visual feedback for user actions
+• Implement intuitive navigation structure
+• Ensure fast loading times and smooth interactions
+
+${isUserInterface ? `
+### Key Interface Elements:
+• Dashboard with key metrics and quick actions
+• Navigation menu with role-based options
+• Forms with real-time validation feedback
+• Data tables with sorting and filtering capabilities` : '• _Detailed UI specifications not provided in input_'}
+
+## Integration Requirements
+
+### Internal Systems:
+${isSystemIntegration ? '• Existing database systems for data synchronization' : '• _Internal integration requirements not specified_'}
+• User directory services (Active Directory/LDAP)
+• Backup and monitoring systems
+• Audit and logging systems
+
+### External Systems:
+${hasPayment ? '• Payment gateway integration for transaction processing' : '• _External payment systems not required_'}
+${hasNotifications ? '• Email/SMS service providers for notifications' : '• _External notification services not specified_'}
+• ${isSystemIntegration ? 'Third-party APIs as specified in requirements' : 'Standard web services for basic functionality'}
+
+### Technical Specifications:
+• RESTful API architecture
+• JSON data format for API communications
+• OAuth 2.0 for secure API authentication
+• Standard HTTP/HTTPS protocols
+
+## Testing & Validation Criteria
+
+### Success Criteria:
+• All functional requirements are implemented and working correctly
+• System performance meets specified non-functional requirements
+• User acceptance testing completed with 95% satisfaction rate
+• Security testing passes all vulnerability assessments
+
+### Test Scenarios:
+1. **Functional Testing:** Verify all features work as specified
+2. **Performance Testing:** Validate system performance under expected load
+3. **Security Testing:** Ensure data protection and access controls
+4. **Integration Testing:** Verify seamless integration with other systems
+5. **User Acceptance Testing:** Confirm system meets business needs
+
+### Validation Methods:
+• Automated testing for regression and performance
+• Manual testing for user experience validation
+• Stakeholder review and approval at each milestone
+• Production deployment with gradual rollout
+
+## Future Enhancements (Optional)
+
+### Phase 2 Enhancements:
+• ${hasReporting ? 'Advanced analytics and machine learning capabilities' : 'Enhanced reporting and analytics features'}
+• ${isMobile ? 'Native mobile applications for iOS and Android' : 'Mobile application development'}
+• ${isSystemIntegration ? 'Additional third-party system integrations' : 'Expanded integration capabilities'}
+• Workflow automation and business process optimization
+
+### Long-term Vision:
+• AI-powered insights and recommendations
+• Advanced customization and personalization features
+• Multi-tenant architecture for enterprise scaling
+• Real-time collaboration and communication tools
+
+## Glossary / Definitions
+
+• **API:** Application Programming Interface - allows different software systems to communicate
+• **CRUD:** Create, Read, Update, Delete - basic database operations
+• **SLA:** Service Level Agreement - defines expected system performance standards
+• **UI/UX:** User Interface/User Experience - design and usability aspects
+• **WCAG:** Web Content Accessibility Guidelines - standards for accessible web design
+${isSystemIntegration ? '• **Integration:** Process of connecting different systems to work together' : ''}
+${isMobile ? '• **Responsive Design:** Web design that adapts to different screen sizes' : ''}
+
+---
+
+**Note:** This BRD is generated based on the provided input. Please review and refine sections marked as "Not provided" with specific business requirements and stakeholder input.`;
 
       setDocumentOutput(enhancedDocument);
     } catch (error) {
