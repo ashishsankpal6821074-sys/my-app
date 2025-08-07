@@ -20,6 +20,13 @@ function PromptManager() {
   const [improvedPrompt, setImprovedPrompt] = useState(null);
   const [showImprovementModal, setShowImprovementModal] = useState(false);
   const [showAddPromptModal, setShowAddPromptModal] = useState(false);
+  const [showDocumentModal, setShowDocumentModal] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [documentInput, setDocumentInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [documentOutput, setDocumentOutput] = useState('');
+  const [emailOutput, setEmailOutput] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Load prompts from API on component mount
@@ -290,6 +297,174 @@ function PromptManager() {
     setEditingId(null);
   };
 
+  // Document Enhancement handlers
+  const handleOpenDocumentModal = () => {
+    setShowDocumentModal(true);
+    setDocumentInput('');
+    setDocumentOutput('');
+  };
+
+  const handleCloseDocumentModal = () => {
+    setShowDocumentModal(false);
+    setDocumentInput('');
+    setDocumentOutput('');
+  };
+
+  const handleDocumentEnhancement = async () => {
+    if (!documentInput.trim()) {
+      alert('Please enter content to analyze');
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const documentPrompt = `You are a business analyst AI assistant.
+
+Analyze the uploaded content and produce a professional, structured Business Requirements Document (BRD) that includes:
+- Title
+- Purpose and Background
+- Scope (In-Scope and Out-of-Scope)
+- Actors or Stakeholders
+- Functional Requirements
+- Non-Functional Requirements
+- Assumptions and Constraints
+- Flow Diagram (stepwise explanation)
+- Future Enhancements
+- Version History
+
+If any data is missing, mention "Not provided".
+
+Input:
+${documentInput}`;
+
+      // Simulate API call for document enhancement
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const enhancedDocument = `# Business Requirements Document
+
+## Title
+Document Enhancement Analysis
+
+## Purpose and Background
+${documentInput.length > 100 ? documentInput.substring(0, 100) + '...' : documentInput}
+
+## Scope
+**In-Scope:**
+- Analysis of provided content
+- Generation of structured BRD format
+- Identification of key requirements
+
+**Out-of-Scope:**
+- Not provided
+
+## Actors or Stakeholders
+- Business Analyst
+- Project Manager
+- Development Team
+- End Users
+
+## Functional Requirements
+1. System shall process the provided input content
+2. System shall generate structured documentation
+3. System shall identify key business requirements
+
+## Non-Functional Requirements
+- Performance: Response time < 3 seconds
+- Reliability: 99.9% uptime
+- Scalability: Support multiple concurrent users
+
+## Assumptions and Constraints
+**Assumptions:**
+- Input content is relevant to business requirements
+- Users have appropriate access permissions
+
+**Constraints:**
+- Limited to provided input data
+- Processing time dependent on content complexity
+
+## Flow Diagram (Stepwise Explanation)
+1. User provides input content
+2. System analyzes content structure
+3. System extracts key requirements
+4. System generates BRD format
+5. System presents structured output
+
+## Future Enhancements
+- Integration with project management tools
+- Advanced AI analysis capabilities
+- Multi-format export options
+
+## Version History
+- v1.0 - Initial BRD generation (${new Date().toLocaleDateString()})`;
+
+      setDocumentOutput(enhancedDocument);
+    } catch (error) {
+      console.error('Error enhancing document:', error);
+      alert('Failed to enhance document. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Email Rewriting handlers
+  const handleOpenEmailModal = () => {
+    setShowEmailModal(true);
+    setEmailInput('');
+    setEmailOutput('');
+  };
+
+  const handleCloseEmailModal = () => {
+    setShowEmailModal(false);
+    setEmailInput('');
+    setEmailOutput('');
+  };
+
+  const handleEmailRewriting = async () => {
+    if (!emailInput.trim()) {
+      alert('Please enter email content to rewrite');
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      // Simulate API call for email rewriting
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const rewrittenEmail = `**Subject Line:** Professional Communication Regarding Your Request
+
+**Enhanced Email Body:**
+
+Dear [Recipient Name],
+
+I hope this email finds you well.
+
+${emailInput.split('\n').map(line => {
+        if (line.trim()) {
+          return line.charAt(0).toUpperCase() + line.slice(1).toLowerCase();
+        }
+        return line;
+      }).join('\n\n')}
+
+I would appreciate your consideration of this matter and look forward to your response at your earliest convenience.
+
+Please feel free to reach out if you require any additional information or clarification.
+
+Thank you for your time and attention.
+
+Best regards,
+[Your Name]
+[Your Title]
+[Contact Information]`;
+
+      setEmailOutput(rewrittenEmail);
+    } catch (error) {
+      console.error('Error rewriting email:', error);
+      alert('Failed to rewrite email. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   // Filter prompts based on search term
   const filteredPrompts = prompts.filter(prompt =>
     prompt.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -350,15 +525,34 @@ function PromptManager() {
         </div>
       </div>
 
-      {/* Add Prompt Button */}
-      <div className="add-prompt-section">
-        <button 
-          className="add-prompt-button"
-          onClick={handleOpenAddPromptModal}
-        >
-          <span className="button-icon">➕</span>
-          Add New Prompt
-        </button>
+      {/* Action Buttons Section */}
+      <div className="action-buttons-section">
+        <div className="primary-actions">
+          <button 
+            className="add-prompt-button"
+            onClick={handleOpenAddPromptModal}
+          >
+            <span className="button-icon">➕</span>
+            Add New Prompt
+          </button>
+        </div>
+        
+        <div className="utility-actions">
+          <button 
+            className="utility-button document-button"
+            onClick={handleOpenDocumentModal}
+          >
+            <span className="button-icon">📄</span>
+            Document Enhancement
+          </button>
+          <button 
+            className="utility-button email-button"
+            onClick={handleOpenEmailModal}
+          >
+            <span className="button-icon">✉️</span>
+            Email Rewriting
+          </button>
+        </div>
       </div>
 
       {/* Search and Filter */}
@@ -472,6 +666,136 @@ function PromptManager() {
           </div>
         )}
       </div>
+
+      {/* Document Enhancement Modal */}
+      {showDocumentModal && (
+        <div className="modal-overlay" onClick={handleCloseDocumentModal}>
+          <div className="modal-content utility-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">
+                📄 Document Enhancement
+              </h2>
+              <button 
+                className="modal-close-button"
+                onClick={handleCloseDocumentModal}
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="utility-content">
+                <div className="input-section">
+                  <label className="form-label">
+                    Input Content for Analysis
+                  </label>
+                  <textarea
+                    value={documentInput}
+                    onChange={(e) => setDocumentInput(e.target.value)}
+                    className="form-textarea"
+                    placeholder="Paste your content here to generate a Business Requirements Document..."
+                    rows="8"
+                    disabled={isProcessing}
+                  />
+                </div>
+                
+                {documentOutput && (
+                  <div className="output-section">
+                    <label className="form-label">
+                      Generated Business Requirements Document
+                    </label>
+                    <div className="output-content">
+                      <pre className="output-text">{documentOutput}</pre>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="modal-footer">
+                <button
+                  onClick={handleDocumentEnhancement}
+                  className={`modal-button accept-button ${isProcessing ? 'loading' : ''}`}
+                  disabled={isProcessing || !documentInput.trim()}
+                >
+                  {isProcessing ? 'Analyzing...' : 'Generate BRD'}
+                </button>
+                <button
+                  className="modal-button reject-button"
+                  onClick={handleCloseDocumentModal}
+                  disabled={isProcessing}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Email Rewriting Modal */}
+      {showEmailModal && (
+        <div className="modal-overlay" onClick={handleCloseEmailModal}>
+          <div className="modal-content utility-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">
+                ✉️ Email Rewriting
+              </h2>
+              <button 
+                className="modal-close-button"
+                onClick={handleCloseEmailModal}
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="utility-content">
+                <div className="input-section">
+                  <label className="form-label">
+                    Original Email Content
+                  </label>
+                  <textarea
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                    className="form-textarea"
+                    placeholder="Paste your email content here to make it more professional..."
+                    rows="6"
+                    disabled={isProcessing}
+                  />
+                </div>
+                
+                {emailOutput && (
+                  <div className="output-section">
+                    <label className="form-label">
+                      Professional Email
+                    </label>
+                    <div className="output-content">
+                      <pre className="output-text">{emailOutput}</pre>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="modal-footer">
+                <button
+                  onClick={handleEmailRewriting}
+                  className={`modal-button accept-button ${isProcessing ? 'loading' : ''}`}
+                  disabled={isProcessing || !emailInput.trim()}
+                >
+                  {isProcessing ? 'Rewriting...' : 'Rewrite Email'}
+                </button>
+                <button
+                  className="modal-button reject-button"
+                  onClick={handleCloseEmailModal}
+                  disabled={isProcessing}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add Prompt Modal */}
       {showAddPromptModal && (

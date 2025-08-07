@@ -646,11 +646,22 @@
   white-space: nowrap;
 }
 
-/* Add Prompt Button Styles */
-.add-prompt-section {
+/* Action Buttons Section Styles */
+.action-buttons-section {
+  margin-bottom: 30px;
+}
+
+.primary-actions {
   display: flex;
   justify-content: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+}
+
+.utility-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .add-prompt-button {
@@ -702,12 +713,156 @@
   font-weight: bold;
 }
 
+/* Utility Buttons Styles */
+.utility-button {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: white;
+  border: none;
+  padding: 16px 28px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  position: relative;
+  overflow: hidden;
+  min-width: 180px;
+  justify-content: center;
+}
+
+.utility-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.utility-button:hover::before {
+  left: 100%;
+}
+
+.utility-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
+}
+
+.utility-button:active {
+  transform: translateY(-1px);
+}
+
+.document-button {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.3);
+}
+
+.document-button:hover {
+  box-shadow: 0 10px 30px rgba(255, 152, 0, 0.4);
+}
+
+.email-button {
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.3);
+}
+
+.email-button:hover {
+  box-shadow: 0 10px 30px rgba(33, 150, 243, 0.4);
+}
+
 /* Modal Styles Enhancement */
 .add-prompt-modal {
   max-width: 600px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
+}
+
+.utility-modal {
+  max-width: 800px;
+  width: 95%;
+  max-height: 95vh;
+  overflow-y: auto;
+}
+
+.utility-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-section,
+.output-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.output-content {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0;
+  max-height: 400px;
+  overflow-y: auto;
+  backdrop-filter: blur(10px);
+}
+
+.output-text {
+  margin: 0;
+  padding: 20px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: rgba(255, 255, 255, 0.9);
+  background: transparent;
+  border: none;
+}
+
+.output-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.output-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.output-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.output-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive Design for Utility Buttons */
+@media (max-width: 768px) {
+  .utility-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .utility-button {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .utility-modal {
+    width: 98%;
+    max-height: 98vh;
+  }
 }
 
 .usage-count {
