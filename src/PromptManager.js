@@ -430,31 +430,152 @@ ${documentInput.length > 100 ? documentInput.substring(0, 100) + '...' : documen
       // Simulate API call for email rewriting
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      const rewrittenEmail = `**Subject Line:** Professional Communication Regarding Your Request
+      // Analyze the original email for context and tone
+      const originalText = emailInput.toLowerCase();
+      const isUrgent = originalText.includes('urgent') || originalText.includes('asap') || originalText.includes('immediately');
+      const isRequest = originalText.includes('can you') || originalText.includes('could you') || originalText.includes('please');
+      const isFollowUp = originalText.includes('follow up') || originalText.includes('checking in') || originalText.includes('following up');
+      const isThankYou = originalText.includes('thank') || originalText.includes('appreciate');
+      const isMeeting = originalText.includes('meeting') || originalText.includes('schedule') || originalText.includes('call');
+      
+      // Generate varied subject lines based on content
+      const subjectLines = {
+        urgent: ["Time-Sensitive Request", "Quick Response Needed", "Urgent Matter - Action Required"],
+        request: ["Request for Assistance", "Quick Question", "Need Your Help With Something"],
+        followUp: ["Following Up on Our Previous Discussion", "Checking In", "Quick Follow-Up"],
+        thankYou: ["Thank You", "Much Appreciated", "Grateful for Your Help"],
+        meeting: ["Meeting Request", "Let's Schedule a Time to Chat", "Quick Call Request"],
+        general: ["Quick Update", "Reaching Out", "Hope You're Doing Well"]
+      };
 
-**Enhanced Email Body:**
+      let subjectCategory = 'general';
+      if (isUrgent) subjectCategory = 'urgent';
+      else if (isRequest) subjectCategory = 'request';
+      else if (isFollowUp) subjectCategory = 'followUp';
+      else if (isThankYou) subjectCategory = 'thankYou';
+      else if (isMeeting) subjectCategory = 'meeting';
 
-Dear [Recipient Name],
+      const selectedSubject = subjectLines[subjectCategory][Math.floor(Math.random() * subjectLines[subjectCategory].length)];
 
-I hope this email finds you well.
+      // Generate varied greetings
+      const greetings = [
+        "Hi there,",
+        "Hello,",
+        "Hey,",
+        "Good morning/afternoon,",
+        "Hope you're having a great day,",
+        "Hope this finds you well,"
+      ];
 
-${emailInput.split('\n').map(line => {
-        if (line.trim()) {
-          return line.charAt(0).toUpperCase() + line.slice(1).toLowerCase();
-        }
-        return line;
-      }).join('\n\n')}
+      // Generate varied closings
+      const closings = {
+        formal: [
+          "Best regards,",
+          "Kind regards,",
+          "Sincerely,",
+          "Best,"
+        ],
+        casual: [
+          "Thanks,",
+          "Cheers,",
+          "Best,",
+          "Talk soon,",
+          "Have a great day,",
+        ]
+      };
 
-I would appreciate your consideration of this matter and look forward to your response at your earliest convenience.
+      const isFormalContext = originalText.includes('sir') || originalText.includes('madam') || originalText.includes('dear') || originalText.length > 200;
+      const selectedClosing = isFormalContext 
+        ? closings.formal[Math.floor(Math.random() * closings.formal.length)]
+        : closings.casual[Math.floor(Math.random() * closings.casual.length)];
 
-Please feel free to reach out if you require any additional information or clarification.
+      const selectedGreeting = greetings[Math.floor(Math.random() * greetings.length)];
 
-Thank you for your time and attention.
+      // Process the main content more naturally
+      const sentences = emailInput.split(/[.!?]+/).filter(s => s.trim().length > 0);
+      const processedContent = sentences.map(sentence => {
+        let processed = sentence.trim();
+        
+        // Capitalize first letter
+        processed = processed.charAt(0).toUpperCase() + processed.slice(1);
+        
+        // Make it more conversational
+        processed = processed
+          .replace(/\bu\b/g, 'you')
+          .replace(/\bur\b/g, 'your')
+          .replace(/\btxt\b/g, 'text')
+          .replace(/\bmsg\b/g, 'message')
+          .replace(/\bthx\b/g, 'thank you')
+          .replace(/\bpls\b/g, 'please')
+          .replace(/\basap\b/g, 'as soon as possible');
+        
+        return processed;
+      }).join('. ');
 
-Best regards,
-[Your Name]
-[Your Title]
-[Contact Information]`;
+      // Add natural transitions and connecting phrases
+      let enhancedContent = processedContent;
+      
+      if (isRequest) {
+        const requestPhrases = [
+          "I was wondering if you could help me with something. ",
+          "I hope you don't mind me reaching out about this. ",
+          "When you have a moment, could you please ",
+          "I'd really appreciate your help with "
+        ];
+        const randomPhrase = requestPhrases[Math.floor(Math.random() * requestPhrases.length)];
+        enhancedContent = randomPhrase + enhancedContent.toLowerCase();
+      }
+
+      if (isFollowUp) {
+        const followUpPhrases = [
+          "I wanted to circle back on ",
+          "Just checking in about ",
+          "Following up on our conversation about ",
+          "I thought I'd touch base regarding "
+        ];
+        const randomPhrase = followUpPhrases[Math.floor(Math.random() * followUpPhrases.length)];
+        enhancedContent = randomPhrase + enhancedContent.toLowerCase();
+      }
+
+      // Add natural ending phrases
+      const endingPhrases = {
+        request: [
+          "Let me know what works best for you.",
+          "Thanks so much for considering this.",
+          "I'd be grateful for any help you can provide.",
+          "No rush at all - whenever you get a chance."
+        ],
+        general: [
+          "Let me know if you have any questions.",
+          "Feel free to reach out if you need anything.",
+          "Hope to hear from you soon.",
+          "Thanks for your time."
+        ],
+        urgent: [
+          "I'd appreciate a quick response when possible.",
+          "Thanks for your prompt attention to this.",
+          "Looking forward to hearing back from you soon."
+        ]
+      };
+
+      let endingCategory = 'general';
+      if (isRequest) endingCategory = 'request';
+      else if (isUrgent) endingCategory = 'urgent';
+
+      const selectedEnding = endingPhrases[endingCategory][Math.floor(Math.random() * endingPhrases[endingCategory].length)];
+
+      const rewrittenEmail = `**Subject:** ${selectedSubject}
+
+**Enhanced Email:**
+
+${selectedGreeting}
+
+${enhancedContent}
+
+${selectedEnding}
+
+${selectedClosing}
+[Your Name]`;
 
       setEmailOutput(rewrittenEmail);
     } catch (error) {
